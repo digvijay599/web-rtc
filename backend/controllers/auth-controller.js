@@ -1,5 +1,7 @@
 const otpservice = require("../services/otp-services");
 const hashService = require("../services/hash-service");
+const UserService = require("../services/user-service");
+const TokenService = require("../services/token-service");
 
 class AuthController {
     async sendOtp(req, res, next) {
@@ -35,7 +37,7 @@ class AuthController {
         });
     }
 
-    verifyOtp(req, res) {
+    async verifyOtp(req, res) {
         const { otp, hash, phone } = req.body;
 
         if (!otp || !hash || !phone) {
@@ -44,7 +46,7 @@ class AuthController {
 
         const [hashedOtp, expires] = hash.split(".");
 
-        if (Date.now() > expires) {
+        if (Date.now() > +expires) {
             res.status(400).json({ massage: "OTP expired!" });
         }
 
@@ -55,9 +57,22 @@ class AuthController {
             res.status(400).json({ message: "Invalid Otp" });
         }
 
+        // Create new User by Phone number
         let user;
         let accessToken;
         let refreshToken;
+
+        try {
+            user = await UserService.findUser({ phone: phone });
+            if (!user) {
+                user = await UserService.createUser({ phone: phone });
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ message: "DB error" });
+        }
+
+        // JWT Token
     }
 }
 

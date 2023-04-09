@@ -19,7 +19,7 @@ class OtpService {
             from: process.env.SMS_FROM_NUMBER,
             body: `Your webRTC OTP is ${otp}`,
         });
-    }
+    } 
 
     verifyOtp(hashedOtp, data) {
         let computedHash = hashService.hashOtp(data);
