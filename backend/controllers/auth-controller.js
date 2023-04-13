@@ -1,8 +1,8 @@
 const otpservice = require("../services/otp-services");
 const hashService = require("../services/hash-service");
 const UserService = require("../services/user-service");
-const TokenService = require("../services/token-service");
-
+const tokenService = require("../services/token-service");
+const UserDro = require("../dtos/user-dto");
 class AuthController {
     async sendOtp(req, res, next) {
         const { phone } = req.body;
@@ -20,10 +20,11 @@ class AuthController {
         const hash = hashService.hashOtp(data);
 
         try {
-            await otpservice.sendBySms(phone, otp);
+            //await otpservice.sendBySms(phone, otp);
             return res.json({
                 hash: `${hash}.${expires}`,
-                phone: phone,
+                phone,
+                otp,
             });
         } catch (err) {
             console.log(err);
@@ -59,8 +60,7 @@ class AuthController {
 
         // Create new User by Phone number
         let user;
-        let accessToken;
-        let refreshToken;
+        //let accessToken;
 
         try {
             user = await UserService.findUser({ phone: phone });
@@ -73,6 +73,17 @@ class AuthController {
         }
 
         // JWT Token
+        const { accessToken, refreshToken } = tokenService.generateToken({
+            _id: user._id,
+            activated: false,
+        });
+
+        res.cookie("refreshToken", refreshToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httponly: true,
+        });
+        const userDto = new UserDro(user);
+        res.json({ accessToken, user: userDto });
     }
 }
 

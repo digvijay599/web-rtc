@@ -7,9 +7,11 @@ class TokenService {
         const accessToken = jwt.sign(payload, accessTokenSecret, {
             expiresIn: "1h",
         });
-        const accessToken = jwt.sign(payload, refreshTokenSecret, {
+        const refreshToken = jwt.sign(payload, refreshTokenSecret, {
             expiresIn: "1y",
         });
+
+        return { accessToken, refreshToken };
     }
 }
 
