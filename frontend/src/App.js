@@ -1,23 +1,23 @@
-import "./App.css";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
-import Home from "./pages/Home/Home";
-import Navigation from "./components/shared/Navigation/Navigation";
-import Authenticate from "./pages/Authenticate/Authenticate";
-import Activate from "./pages/Activate/Activate";
-import Rooms from "./pages/Rooms/Rooms";
-import { useSelector } from "react-redux";
+import './App.css';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import Home from './pages/Home/Home';
+import Navigation from './components/shared/Navigation/Navigation';
+import Authenticate from './pages/Authenticate/Authenticate';
+import Activate from './pages/Activate/Activate';
+import Rooms from './pages/Rooms/Rooms';
+import { useSelector } from 'react-redux';
 
 function App() {
     return (
         <BrowserRouter>
             <Navigation />
             <Switch>
-                <GuestRoutes path="/" exact>
+                <GuestRoute path="/" exact>
                     <Home />
-                </GuestRoutes>
-                <GuestRoutes path="/authenticate">
+                </GuestRoute>
+                <GuestRoute path="/authenticate">
                     <Authenticate />
-                </GuestRoutes>
+                </GuestRoute>
                 <SemiProtectedRoute path="/activate">
                     <Activate />
                 </SemiProtectedRoute>
@@ -29,7 +29,7 @@ function App() {
     );
 }
 
-const GuestRoutes = ({ children, ...rest }) => {
+const GuestRoute = ({ children, ...rest }) => {
     const { isAuth } = useSelector((state) => state.auth);
     return (
         <Route
@@ -38,7 +38,7 @@ const GuestRoutes = ({ children, ...rest }) => {
                 return isAuth ? (
                     <Redirect
                         to={{
-                            pathname: "/rooms",
+                            pathname: '/rooms',
                             state: { from: location },
                         }}
                     />
@@ -51,16 +51,15 @@ const GuestRoutes = ({ children, ...rest }) => {
 };
 
 const SemiProtectedRoute = ({ children, ...rest }) => {
-    const { isAuth, user } = useSelector((state) => state.auth);
-
+    const { user, isAuth } = useSelector((state) => state.auth);
     return (
         <Route
             {...rest}
             render={({ location }) => {
-                return isAuth ? (
+                return !isAuth ? (
                     <Redirect
                         to={{
-                            pathname: "/",
+                            pathname: '/',
                             state: { from: location },
                         }}
                     />
@@ -69,7 +68,7 @@ const SemiProtectedRoute = ({ children, ...rest }) => {
                 ) : (
                     <Redirect
                         to={{
-                            pathname: "/rooms",
+                            pathname: '/rooms',
                             state: { from: location },
                         }}
                     />
@@ -80,8 +79,7 @@ const SemiProtectedRoute = ({ children, ...rest }) => {
 };
 
 const ProtectedRoute = ({ children, ...rest }) => {
-    const { isAuth, user } = useSelector((state) => state.auth);
-
+    const { user, isAuth } = useSelector((state) => state.auth);
     return (
         <Route
             {...rest}
@@ -89,14 +87,14 @@ const ProtectedRoute = ({ children, ...rest }) => {
                 return !isAuth ? (
                     <Redirect
                         to={{
-                            pathname: "/",
+                            pathname: '/',
                             state: { from: location },
                         }}
                     />
                 ) : isAuth && !user.activated ? (
                     <Redirect
                         to={{
-                            pathname: "/activate",
+                            pathname: '/activate',
                             state: { from: location },
                         }}
                     />

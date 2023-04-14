@@ -78,12 +78,20 @@ class AuthController {
             activated: false,
         });
 
+        await tokenService.storeRefreshToken(refreshToken, user._id);
+
         res.cookie("refreshToken", refreshToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
             httponly: true,
         });
+
+        res.cookie("accessToken", accessToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httponly: true,
+        });
+
         const userDto = new UserDro(user);
-        res.json({ accessToken, user: userDto });
+        res.json({ user: userDto, auth: true });
     }
 }
 

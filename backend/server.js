@@ -6,7 +6,12 @@ const DbConnect = require("./db");
 const cors = require("cors");
 
 const corsOption = {
-    origin: ["http://localhost:3000"],
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
+
+    origin: "http://localhost:3000",
 };
 
 app.use(cors(corsOption));
