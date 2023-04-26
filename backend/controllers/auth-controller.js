@@ -93,6 +93,78 @@ class AuthController {
         const userDto = new UserDro(user);
         res.json({ user: userDto, auth: true });
     }
+
+    async refresh(req, res) {
+        //get refresh Token from cookie
+        const { refreshToken: refreshTokenFromCookie } = req.cookies;
+        // check if token is valid
+        let userData;
+        try {
+            userData = await tokenService.verifyRefreshToken(
+                refreshTokenFromCookie
+            );
+        } catch (error) {
+            return res.status(401).json({ message: "Invalid Token" });
+        }
+        // check if token is in db
+        try {
+            const token = tokenService.findRefreshToken(
+                userData._id,
+                refreshTokenFromCookie
+            );
+
+            if (!token) {
+                return res.status(401).json({ message: "Invalid Token" });
+            }
+        } catch (error) {
+            return res.status(500).json({ message: "Internal error" });
+        }
+
+        //check if valid user
+        const user = UserService.findUser({ _id: userData._id });
+
+        if (!user) {
+            return res.status(404).json({ message: "No User" });
+        }
+
+        // Generate new token
+        const { refreshToken, accessToken } = tokenService.generateToken({
+            _id: userData._id,
+        });
+
+        // Update refresh Token
+        try {
+            await tokenService.updateRefreshToken(userData._id, refreshToken);
+        } catch (error) {
+            return res.status(500).json({ message: "Internal error" });
+        }
+
+        //put in cookie
+        res.cookie("refreshToken", refreshToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httponly: true,
+        });
+
+        res.cookie("accessToken", accessToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httponly: true,
+        });
+        //response
+        const userDto = new UserDro(user);
+        res.json({ user: userDto, auth: true });
+    }
+
+    async logout(req, res) {
+        // delete refresh token for db
+        const { refreshToken } = req.cookies;
+        try {
+            await tokenService.deleteToken(refreshToken);
+            res.clearCookie("refreshToken");
+            res.status(200).json({ user: null, auth: false });
+        } catch (error) {
+            return res.status(500).json({ message: "Internal error" });
+        }
+    }
 }
 
 module.exports = new AuthController();

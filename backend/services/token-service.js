@@ -24,6 +24,32 @@ class TokenService {
             console.log(err.message);
         }
     }
+    async varifyAccessToken(token) {
+        return jwt.verify(token, accessTokenSecret);
+    }
+    async varifyRefreshToken(token) {
+        return jwt.verify(token, refreshTokenSecret);
+    }
+
+    async findRefreshToken(userId, refreshToken) {
+        return await refreshModel.findOne({
+            userId: userId,
+            token: refreshToken,
+        });
+    }
+
+    async updateRefreshToken(userId, refreshToken) {
+        return await refreshModel.updateOne(
+            { userId: userId },
+            { token: refreshToken }
+        );
+    }
+
+    async deleteToken(refreshToken) {
+        return await refreshModel.deleteOne({
+            token: refreshToken,
+        });
+    }
 }
 
 module.exports = new TokenService();

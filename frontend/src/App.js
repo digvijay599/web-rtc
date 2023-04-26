@@ -1,14 +1,21 @@
-import './App.css';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
-import Home from './pages/Home/Home';
-import Navigation from './components/shared/Navigation/Navigation';
-import Authenticate from './pages/Authenticate/Authenticate';
-import Activate from './pages/Activate/Activate';
-import Rooms from './pages/Rooms/Rooms';
-import { useSelector } from 'react-redux';
+import "./App.css";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import Home from "./pages/Home/Home";
+import Navigation from "./components/shared/Navigation/Navigation";
+import Authenticate from "./pages/Authenticate/Authenticate";
+import Activate from "./pages/Activate/Activate";
+import Rooms from "./pages/Rooms/Rooms";
+import { useSelector } from "react-redux";
+import { useLoadingWithRefresh } from "./hooks/useLoadingWithRefresh";
+import Loader from "./components/shared/Loader/Loader";
 
 function App() {
-    return (
+    return <Loader message="Acrivating on Progress ..." />;
+
+    const { loading } = useLoadingWithRefresh();
+    return loading ? (
+        "Loading..."
+    ) : (
         <BrowserRouter>
             <Navigation />
             <Switch>
@@ -38,7 +45,7 @@ const GuestRoute = ({ children, ...rest }) => {
                 return isAuth ? (
                     <Redirect
                         to={{
-                            pathname: '/rooms',
+                            pathname: "/rooms",
                             state: { from: location },
                         }}
                     />
@@ -59,7 +66,7 @@ const SemiProtectedRoute = ({ children, ...rest }) => {
                 return !isAuth ? (
                     <Redirect
                         to={{
-                            pathname: '/',
+                            pathname: "/",
                             state: { from: location },
                         }}
                     />
@@ -68,7 +75,7 @@ const SemiProtectedRoute = ({ children, ...rest }) => {
                 ) : (
                     <Redirect
                         to={{
-                            pathname: '/rooms',
+                            pathname: "/rooms",
                             state: { from: location },
                         }}
                     />
@@ -87,14 +94,14 @@ const ProtectedRoute = ({ children, ...rest }) => {
                 return !isAuth ? (
                     <Redirect
                         to={{
-                            pathname: '/',
+                            pathname: "/",
                             state: { from: location },
                         }}
                     />
                 ) : isAuth && !user.activated ? (
                     <Redirect
                         to={{
-                            pathname: '/activate',
+                            pathname: "/activate",
                             state: { from: location },
                         }}
                     />
