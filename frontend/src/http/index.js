@@ -5,6 +5,7 @@ const api = axios.create({
     withCredentials: true,
     headers: {
         "Content-type": "application/json",
+        "Access-Control-Allow-Origin": "*",
         Accept: "application/json",
     },
 });
@@ -15,6 +16,10 @@ export const verifyOtp = (data) => api.post("/api/verify-otp", data);
 export const activate = (data) => api.post("/api/activate", data);
 export const logout = () => api.post("/api/logout");
 
+//Rooms endpoints
+export const createRoom = (data) => api.post("/api/rooms", data);
+export const getAllRooms = () => api.get("/api/rooms");
+export const getRoom = (id) => api.post("/api/rooms/:id");
 // Intercepters
 api.interceptors.response.use(
     (config) => {

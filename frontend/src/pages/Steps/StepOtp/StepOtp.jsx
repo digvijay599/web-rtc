@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../../../components/shared/Card/Card';
 import TextInput from '../../../components/shared/TextInput/TextInput';
 import Button from '../../../components/shared/Button/Button';
@@ -10,17 +10,32 @@ import { useDispatch } from 'react-redux';
 
 const StepOtp = () => {
     const [otp, setOtp] = useState('');
+    const [unmounted, SetUnmounted] = useState(false);
+
     const dispatch = useDispatch();
     const { phone, hash } = useSelector((state) => state.auth.otp);
+
     async function submit(e) {
+        if (!otp || !hash || !phone) return
         e.preventDefault();
         try {
             const { data } = await verifyOtp({ otp, phone, hash });
-            dispatch(setAuth(data));
+            if (!unmounted) {
+                dispatch(setAuth(data));
+            }
+
         } catch (err) {
             console.log("Error:", err);
         }
     }
+    useEffect(() => {
+        console.log("Step Opt", unmounted);
+        return () => {
+            SetUnmounted(true)
+            console.log("Step Opt", unmounted);
+        }
+    }, [])
+
     return (
         <>
             <div className={styles.cardWrapper}>
