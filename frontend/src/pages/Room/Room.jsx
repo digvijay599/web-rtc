@@ -19,8 +19,10 @@ const Room = () => {
 
     useEffect(() => {
         const fetchRoom = async () => {
+            console.log("Room ID : ", roomId);
             const { data } = await getRoom(roomId);
-            setRoom((prev) => data);
+            console.log(data);
+            setRoom(data);
         };
 
         fetchRoom();

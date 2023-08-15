@@ -42,10 +42,24 @@ app.get("/", (req, res) => {
     res.send("<h1>WebRTC Api </h1>");
 });
 
-
 //Socket
+const socketUserMapping = {}
 io.on('connection', (socket) => {
+    console.log('new Connection: ', socket.id);
 
+    socket.on(ACTION.JOIN, (roomId, user) => {
+        socketUserMapping[socket.id] = user;
+    });
+
+    // user mapping from user to room mapping 
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+
+    clients.forEach((clientId) => {
+        io.to(clientId).emit(ACTIONS.ADD_PEER, {});
+    });
+
+    socket.emit(ACTIONS.ADD_PEER, {});
+    socket.join(roomId);
 })
 
 server.listen(PORT, (req, res) => {
