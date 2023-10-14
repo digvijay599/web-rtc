@@ -19,7 +19,7 @@ export const logout = () => api.post("/api/logout");
 //Rooms endpoints
 export const createRoom = (data) => api.post("/api/rooms", data);
 export const getAllRooms = () => api.get("/api/rooms");
-export const getRoom = (roomId) => api.post(`/api/rooms/${roomId}`);
+export const getRoom = (roomId) => api.get(`/api/rooms/${roomId}`);
 // Intercepters
 api.interceptors.response.use(
     (config) => {

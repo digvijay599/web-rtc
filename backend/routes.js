@@ -12,7 +12,9 @@ router.get("/api/refresh", authController.refresh);
 router.post("/api/logout", authMiddleware, authController.logout);
 
 // Rooms endpoints
-router.post("/api/rooms", authMiddleware, roomsController.create);
-router.get("/api/rooms", authMiddleware, roomsController.index);
+router.post('/api/rooms', authMiddleware, roomsController.create);
+router.get('/api/rooms', authMiddleware, roomsController.index);
+router.get('/api/rooms/:roomId', authMiddleware, roomsController.show);
+router.get('/api/test', (req, res) => res.json({ msg: 'OK' }));
 
 module.exports = router;
